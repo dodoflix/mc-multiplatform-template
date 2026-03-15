@@ -1,0 +1,30 @@
+modLoader = "javafml"
+loaderVersion = "[54,)"
+license = "MIT"
+issueTrackerURL = "https://github.com/yourusername/YourRepo/issues"
+
+[[mods]]
+modId = "modtemplate"
+version = "${version}"
+displayName = "ModTemplate"
+displayURL = "https://github.com/yourusername/YourRepo"
+logoFile = "logo.png"
+credits = "yourname"
+authors = "yourname"
+description = '''
+A Minecraft mod template.
+'''
+
+[[dependencies.modtemplate]]
+modId = "forge"
+mandatory = true
+versionRange = "[${forge_version},)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.modtemplate]]
+modId = "minecraft"
+mandatory = true
+versionRange = "[${minecraft_version},)"
+ordering = "NONE"
+side = "BOTH"

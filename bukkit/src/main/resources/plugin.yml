@@ -1,0 +1,19 @@
+name: ModTemplate
+version: '${version}'
+main: me.example.modtemplate.bukkit.ModTemplate
+api-version: '1.21'
+authors:
+  - yourname
+description: ${description}
+website: https://github.com/yourusername/YourRepo
+
+commands:
+  modtemplate:
+    description: Main command for ModTemplate
+    usage: /<command> <reload|status|help>
+    aliases: [mt]
+
+permissions:
+  modtemplate.admin:
+    description: Allows access to all ModTemplate admin commands.
+    default: op

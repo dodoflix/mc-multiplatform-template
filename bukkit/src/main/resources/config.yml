@@ -1,0 +1,9 @@
+# ModTemplate Configuration
+# Rename this section header with your mod name after setup.sh
+
+# Set to false to completely disable the mod.
+enabled: true
+
+# Worlds where the feature is disabled.
+# Add world names to this list to exclude them from the mod's effects.
+disabled-worlds: []

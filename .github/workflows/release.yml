@@ -1,0 +1,27 @@
+name: Release
+
+on:
+  push:
+    branches: [master, develop]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    uses: dodoflix/mc-multiplatform-toolkit/.github/workflows/release.yml@main
+    with:
+      mod-name: ModTemplate
+      mod-id: modtemplate
+      java-version: '21'
+      run-bukkit: true
+      run-fabric: true
+      run-forge: true
+      run-neoforge: true
+      modrinth-project-id: ${{ vars.MODRINTH_PROJECT_ID }}
+      bukkit-mc-versions: |
+        1.21.11
+      fabric-mc-versions: "1.21.11"
+      forge-mc-versions: "1.21.11"
+      neoforge-mc-versions: "1.21.11"
+    secrets: inherit

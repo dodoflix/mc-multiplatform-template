@@ -1,0 +1,21 @@
+name: CI
+
+on:
+  push:
+    branches: [master, develop, 'feature/**', 'fix/**']
+  pull_request:
+    branches: [master, develop]
+  workflow_dispatch:
+
+jobs:
+  ci:
+    uses: dodoflix/mc-multiplatform-toolkit/.github/workflows/ci.yml@main
+    with:
+      mod-name: ModTemplate
+      mod-id: modtemplate
+      java-version: '21'
+      run-bukkit: true
+      run-fabric: true
+      run-forge: true
+      run-neoforge: true
+    secrets: inherit

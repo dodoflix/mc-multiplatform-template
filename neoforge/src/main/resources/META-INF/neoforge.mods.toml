@@ -1,0 +1,30 @@
+modLoader = "javafml"
+loaderVersion = "[4,)"
+license = "MIT"
+issueTrackerURL = "https://github.com/yourusername/YourRepo/issues"
+
+[[mods]]
+modId = "modtemplate"
+version = "${version}"
+displayName = "ModTemplate"
+displayURL = "https://github.com/yourusername/YourRepo"
+logoFile = "logo.png"
+credits = "yourname"
+authors = "yourname"
+description = '''
+A Minecraft mod template.
+'''
+
+[[dependencies.modtemplate]]
+modId = "neoforge"
+type = "required"
+versionRange = "[${neoforge_version},)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.modtemplate]]
+modId = "minecraft"
+type = "required"
+versionRange = "[${minecraft_version},)"
+ordering = "NONE"
+side = "BOTH"

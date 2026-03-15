@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "id": "modtemplate",
+  "version": "${version}",
+  "name": "ModTemplate",
+  "description": "A Minecraft mod template.",
+  "authors": ["yourname"],
+  "contact": {
+    "homepage": "https://github.com/yourusername/YourRepo",
+    "sources": "https://github.com/yourusername/YourRepo",
+    "issues": "https://github.com/yourusername/YourRepo/issues"
+  },
+  "license": "MIT",
+  "environment": "*",
+  "entrypoints": {
+    "main": ["me.example.modtemplate.fabric.ModTemplateFabric"]
+  },
+  "mixins": ["modtemplate.mixins.json"],
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "minecraft": "~${minecraft_version}",
+    "java": ">=21",
+    "fabric-api": "*"
+  }
+}
