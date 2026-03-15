@@ -4,40 +4,41 @@
 [![GitHub Release](https://img.shields.io/github/v/release/yourusername/YourRepo?label=release)](https://github.com/yourusername/YourRepo/releases)
 [![License](https://img.shields.io/github/license/yourusername/YourRepo)](LICENSE)
 
-> ⚠️ **This is a template project.** Run `bash setup.sh` after cloning to personalise it.
+> ⚠️ **This is a template project.** Click **Use this template** on GitHub, then run `bash setup.sh` to personalise it.
 
-A multi-platform Minecraft mod/plugin starter project supporting **Bukkit/Spigot/Paper**, **Fabric**, **Forge**, and **NeoForge**.
+A multi-platform Minecraft mod/plugin starter project supporting **Bukkit/Spigot/Paper**, **Fabric**, **Forge**, and **NeoForge** from a single shared Java core.
 
 ---
 
 ## 🚀 Quick Start
 
 ```bash
-# 1. Click "Use this template" on GitHub (or clone)
+# 1. Click "Use this template" on GitHub (do NOT clone this repo directly)
+
+# 2. Clone your new repo
 git clone https://github.com/yourusername/YourRepo.git
 cd YourRepo
 
-# 2. Run the setup script — it asks a few questions and renames everything
+# 3. Run the setup script — renames everything to your mod name/ID
 bash setup.sh
 
-# 3. Verify the stub code compiles
+# 4. Verify the stub compiles and tests pass
 ./gradlew :common:test
-cd bukkit && ./gradlew build
 ```
 
-That's it. Replace the stub `ExampleFeature` with your actual mod logic.
+That's it. Replace `ExampleFeature` with your actual mod logic — start in `common/`, then wire each platform.
 
 ---
 
 ## 📦 Platform Support
 
-| Platform | MC Version | Notes |
-|----------|-----------|-------|
-| **Bukkit/Spigot/Paper** | 1.21.11+ | Plugin JAR via Shadow |
-| **Fabric** | 1.21.11 | Bundled via `include()` |
-| **Forge** | 1.21.11 | Shadow with relocation |
-| **NeoForge** | 1.21.11 | JAR-in-JAR via `jarJar` |
-| **Quilt** | — | Use Fabric version |
+| Platform | MC Version | Packaging |
+|----------|-----------|-----------|
+| **Bukkit/Spigot/Paper** | 1.21.11+ | Shadow JAR with relocation |
+| **Fabric** | 1.21.11 | `include()` (bundled JAR) |
+| **Forge** | 1.21.11 | Shadow JAR with relocation |
+| **NeoForge** | 1.21.11 | `jarJar` (JAR-in-JAR) |
+| **Quilt** | — | Use the Fabric JAR |
 
 ---
 
@@ -45,47 +46,82 @@ That's it. Replace the stub `ExampleFeature` with your actual mod logic.
 
 ```
 YourRepo/
-├── common/                 ← Pure Java business logic (no platform deps)
+├── common/                      ← Pure Java business logic (zero platform deps)
 │   └── src/main/java/.../common/
-│       ├── Constants.java  ← Shared constants (mod ID, permissions, etc.)
-│       ├── ModConfig.java  ← Config interface (platform-agnostic)
+│       ├── Constants.java       ← Shared constants (mod ID, permissions, etc.)
+│       ├── ModConfig.java       ← Config interface (implemented per platform)
 │       └── ExampleFeature.java  ← Replace with your logic
-├── bukkit/                 ← Bukkit/Spigot/Paper implementation
-├── fabric/                 ← Fabric implementation
-├── forge/                  ← Forge implementation
-└── neoforge/               ← NeoForge implementation
+├── bukkit/                      ← Bukkit/Spigot/Paper implementation
+├── fabric/                      ← Fabric implementation
+├── forge/                       ← Forge implementation
+└── neoforge/                    ← NeoForge implementation
 ```
 
-**The "common first" rule:** All business logic lives in `common/`. Platform modules only wire platform APIs to the common core — they contain **no business logic**.
+**The "common first" rule:** all business logic lives in `common/`. Platform modules are thin adapters — they wire platform events to common logic and contain **no business logic** themselves.
+
+See [ARCHITECTURE.md](ARCHITECTURE.md) for a deeper dive.
 
 ---
 
 ## ⚙️ CI/CD
 
-This template uses [`mc-multiplatform-toolkit`](https://github.com/dodoflix/mc-multiplatform-toolkit) for reusable CI/CD workflows. Your `.github/workflows/` are just **10-line callers** — all logic is maintained centrally.
+Powered by [`mc-multiplatform-toolkit`](https://github.com/dodoflix/mc-multiplatform-toolkit). The workflows in `.github/workflows/` are **thin callers** (≤ 25 lines each) — all CI/CD logic is maintained centrally in the toolkit.
 
-- **CI** (`ci.yml`): Unit tests → parallel platform builds → integration tests on PRs
-- **Release** (`release.yml`): Auto version bump from [Conventional Commits](https://www.conventionalcommits.org/) → GitHub Release + Modrinth publish
+### Pipeline
 
-### Required Secrets / Variables
+```
+push / PR
+    │
+    ▼
+  CI (ci.yml)
+  ├── Unit tests (JUnit 5 + JaCoCo coverage → Codecov)
+  ├── Platform builds (Bukkit, Fabric, Forge, NeoForge) in parallel
+  └── Integration tests (on PRs and pushes to master/develop)
+         │
+         │  workflow_run (only on CI success)
+         ▼
+  CD (cd.yml)
+  ├── Compute next version from Conventional Commits
+  ├── Build release JARs for all platforms
+  ├── Create GitHub Release with changelog
+  └── Publish to Modrinth
+```
 
-| Name | Where | Description |
-|------|-------|-------------|
-| `MODRINTH_TOKEN` | Repository secret | Modrinth API token |
-| `MODRINTH_PROJECT_ID` | Repository variable (`vars.*`) | Modrinth project ID/slug |
+CD only triggers when CI passes — releases cannot happen from a broken build.
+
+### Branch Strategy
+
+| Branch | Purpose |
+|--------|---------|
+| `master` | Production — tagged releases only |
+| `develop` | Integration — merge features here first |
+| `feature/*`, `fix/*`, `chore/*` | Short-lived work branches |
+
+### Required Secrets & Variables
+
+| Name | Type | Description |
+|------|------|-------------|
+| `MODRINTH_TOKEN` | Repository secret | Modrinth API token for publishing |
+| `CODECOV_TOKEN` | Repository secret | Codecov upload token for coverage reports |
+| `MODRINTH_PROJECT_ID` | Repository variable | Your Modrinth project ID or slug |
 
 ---
 
-## 🔧 Building
+## 🔧 Building Locally
 
 ```bash
-# All platforms (run from each platform dir)
-./gradlew :common:test          # common unit tests
-cd bukkit   && ./gradlew build  # bukkit/build/libs/
-cd fabric   && ./gradlew build  # fabric/build/libs/
-cd forge    && ./gradlew build  # forge/build/libs/
-cd neoforge && ./gradlew build  # neoforge/build/libs/
+./gradlew :common:test           # Run common unit tests
+cd bukkit   && ./gradlew build   # → bukkit/build/libs/
+cd fabric   && ./gradlew build   # → fabric/build/libs/
+cd forge    && ./gradlew build   # → forge/build/libs/
+cd neoforge && ./gradlew build   # → neoforge/build/libs/
 ```
+
+---
+
+## 🤝 Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md). All commits must follow [Conventional Commits](https://www.conventionalcommits.org/) — the CD pipeline uses them to determine version bumps automatically.
 
 ---
 
