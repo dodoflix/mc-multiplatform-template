@@ -45,6 +45,29 @@ Delegate each phase to the right specialised agent. Do not implement in main con
 
 ---
 
+### Reference Consistency Check
+
+**After every change — before committing — scan for stale references.**
+
+Any time you rename, move, or change the behaviour of something, grep for the old name across the whole repo:
+
+```bash
+# Find all references to a renamed file, class, method, or concept
+grep -r "old-name" . --include="*.md" --include="*.java" --include="*.yml" --include="*.toml"
+```
+
+Things to check after common change types:
+
+- **Class/method renamed** → grep old name in all source files, tests, and docs
+- **Config key or permission node changed** → grep in docs, `plugin.yml`, `fabric.mod.json`, README, copilot instructions
+- **Workflow renamed** → grep old name in README, this file, and badge URLs
+- **New feature added** → check if README, CHANGELOG, and copilot instructions need updating
+- **`ModConfig` method added/renamed** → verify all 4 platform `Config` classes still implement it
+
+**Fix every stale reference in the same commit as the original change.** A rename with dangling references is an incomplete commit.
+
+---
+
 ### TDD — Test-Driven Development
 
 All logic in `common/` **must** follow TDD. Platform wiring uses mocks.
@@ -69,17 +92,7 @@ For `ExampleFeature` stub: when replacing with real logic, always delete `Exampl
 
 ---
 
-## File Sync Rules
 
-When any of the files below are updated, you **must** also update all listed dependents in the same commit:
-
-| File changed | Also update |
-|---|---|
-| `.github/workflows/ci.yml` or `cd.yml` (toolkit `uses:` version) | `README.md` CI/CD section; this file's **CI/CD** section |
-| Any workflow added or renamed | `README.md`; this file |
-| `README.md` badges or CI/CD section | Verify workflow file names match actual `.github/workflows/` contents |
-
----
 
 ## Project Overview
 
