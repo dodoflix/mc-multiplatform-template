@@ -5,6 +5,70 @@
 
 ---
 
+## Development Workflow
+
+### Task Size Gating — Plan Before Acting
+
+Assess scope before writing any code:
+
+**Always plan first when ANY of these are true:**
+- New feature class, new module, or new config option is being added
+- Task touches more than 3 files
+- The request requires a decision about design (e.g. where logic lives, what the API looks like)
+- Changes to `ModConfig` interface (impacts all 4 platforms simultaneously)
+
+**Planning steps:**
+1. Use `explore` agent to understand the current codebase structure and conventions
+2. Write a plan to the session plan file; break into ordered todos in the SQL `todos` table
+3. Confirm the plan with the user before writing code
+
+**Start directly (no plan needed):**
+- Single-file bug fix or documentation update
+- Dependency version bump in `libs.versions.toml`
+
+---
+
+### Sub-Agent Dispatch — One Agent Per Lifecycle Phase
+
+Delegate each phase to the right specialised agent. Do not implement in main context what a sub-agent can handle.
+
+| Phase | Agent type | Example use |
+|---|---|---|
+| **Explore** | `explore` | "Find all implementations of `ModConfig`. What methods does it require?" |
+| **TDD — write tests** | `general-purpose` | "Write failing JUnit 5 tests in `common/` for the new feature behaviour." |
+| **Implement** | `general-purpose` | "Implement the feature to make the failing tests pass." |
+| **Platform wiring** | `general-purpose` | "Wire the new feature into all 4 platform event handlers." |
+| **Build & test** | `task` | Run `./gradlew :common:test` or full build; returns output only on failure. |
+| **Code review** | `code-review` | Review all staged changes before committing. |
+
+**Parallelise independent work:** Multiple `explore` agents can run in one response. `task` agents run in background — continue planning while they build. Never re-read files an `explore` agent already reported.
+
+---
+
+### TDD — Test-Driven Development
+
+All logic in `common/` **must** follow TDD. Platform wiring uses mocks.
+
+**The cycle:**
+
+1. **Write the failing test** (`common/src/test/java/…`):
+   ```java
+   @Test
+   void should<Outcome>_when<Condition>() {
+       // Arrange → Act → Assert
+   }
+   ```
+2. **Run**: `task` agent → `./gradlew :common:test` — confirm test **fails** (not compile-error)
+3. **Implement** minimum logic to make it pass — no extra code
+4. **Run again**: confirm **green**
+5. **Refactor** if needed, re-run
+6. **Code review**: `code-review` agent — test + implementation staged together
+7. **Commit** test + implementation in one commit
+
+For `ExampleFeature` stub: when replacing with real logic, always delete `ExampleFeatureTest` and write new tests for the actual feature before implementing it.
+
+---
+
 ## File Sync Rules
 
 When any of the files below are updated, you **must** also update all listed dependents in the same commit:
