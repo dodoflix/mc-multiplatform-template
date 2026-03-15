@@ -1,0 +1,11 @@
+# Code owners for mc-multiplatform-template
+# Replace @yourusername with your GitHub username after setup.sh
+
+# Default owner
+* @yourusername
+
+# CI/CD workflows
+.github/workflows/ @yourusername
+
+# Common business logic — stricter review
+common/ @yourusername
