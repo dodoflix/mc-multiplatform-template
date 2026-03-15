@@ -65,7 +65,7 @@ YourRepo/
 This template uses [`mc-multiplatform-toolkit`](https://github.com/dodoflix/mc-multiplatform-toolkit) for reusable CI/CD workflows. Your `.github/workflows/` are just **10-line callers** — all logic is maintained centrally.
 
 - **CI** (`ci.yml`): Unit tests → parallel platform builds → integration tests on PRs
-- **Release** (`release.yml`): Auto version bump from [Conventional Commits](https://www.conventionalcommits.org/) → GitHub Release + Modrinth publish
+- **CD** (`cd.yml`): Auto version bump from [Conventional Commits](https://www.conventionalcommits.org/) → GitHub Release + Modrinth publish
 
 ### Required Secrets / Variables
 

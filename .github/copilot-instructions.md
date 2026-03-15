@@ -5,6 +5,18 @@
 
 ---
 
+## File Sync Rules
+
+When any of the files below are updated, you **must** also update all listed dependents in the same commit:
+
+| File changed | Also update |
+|---|---|
+| `.github/workflows/ci.yml` or `cd.yml` (toolkit `uses:` version) | `README.md` CI/CD section; this file's **CI/CD** section |
+| Any workflow added or renamed | `README.md`; this file |
+| `README.md` badges or CI/CD section | Verify workflow file names match actual `.github/workflows/` contents |
+
+---
+
 ## Project Overview
 
 A GitHub Template repository for multi-platform Minecraft mods and plugins. Supports **Bukkit/Spigot/Paper**, **Fabric**, **Forge**, and **NeoForge** from a single shared core. Run `bash setup.sh` after cloning to personalise all placeholder values.
